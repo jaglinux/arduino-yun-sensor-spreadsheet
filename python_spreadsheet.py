@@ -2,6 +2,7 @@ from __future__ import print_function
 import httplib2
 import os
 import json
+import datetime
 
 from apiclient import discovery
 import oauth2client
@@ -58,11 +59,13 @@ def main():
                     'version=v4')
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
-
+    #Once you create a spreadsheet, if we open the spreadsheet, in the URL we will see the spreadsheet ID.
     spreadsheetId = '1Pi1wAqHQivrJQGekIIEqzOol-Z6bp4CGhvaYmIpXKPA'
-    
+    now = datetime.datetime.now()
+    current_time = now.strftime("%Y-%m-%d-%H:%M")
+    print (current_time)
     #myBody = {u'range': u'Sheet1!A2:B3', u'values': [[u'date', u'512'], [u'date2', u'600']], u'majorDimension': u'ROWS'}
-    myBody = {u'range': u'Sheet1!A1:B1', u'values': [[u'date', u'444']], u'majorDimension': u'ROWS'}
+    myBody = {u'range': u'Sheet1!A1:B1', u'values': [[current_time, u'444']], u'majorDimension': u'ROWS'}
     rangeUpdate = 'Sheet1!A1:B1'
     update = service.spreadsheets().values().update(spreadsheetId=spreadsheetId, range=rangeUpdate, valueInputOption='RAW', body=myBody).execute()
    
