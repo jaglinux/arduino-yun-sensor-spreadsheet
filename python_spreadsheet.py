@@ -65,22 +65,31 @@ def main():
     current_time = now.strftime("%Y-%m-%d-%H:%M")
     print (current_time)
     #myBody = {u'range': u'Sheet1!A2:B3', u'values': [[u'date', u'512'], [u'date2', u'600']], u'majorDimension': u'ROWS'}
-    myBody = {u'range': u'Sheet1!A1:B1', u'values': [[current_time, u'444']], u'majorDimension': u'ROWS'}
-    rangeUpdate = 'Sheet1!A1:B1'
-    update = service.spreadsheets().values().update(spreadsheetId=spreadsheetId, range=rangeUpdate, valueInputOption='RAW', body=myBody).execute()
-   
+    
+    #update the heading and then append the values each time the script is run.
     rangeName = 'Sheet1!A1:B1'
     result = service.spreadsheets().values().get(spreadsheetId=spreadsheetId, range=rangeName).execute()
+    values_heading = result.get('values', [])
+    if not values_heading:
+        print('No heading found. Updating the heading.')
+        myBody = {'range': 'Sheet1!A1:B1', 'values': [["TIME", 'SENSOR DATA']], 'majorDimension': 'ROWS'}
+        rangeUpdate = 'Sheet1!A1:B1'
+        update = service.spreadsheets().values().append(spreadsheetId=spreadsheetId, range=rangeUpdate, valueInputOption='RAW', body=myBody).execute()	
+    
+    #Append the sensor data from second row onwards	
+    myBody = {'range': 'Sheet1!A2:B2', 'values': [[current_time, '595']], 'majorDimension': 'ROWS'}
+    rangeUpdate = 'Sheet1!A2:B2'
+    update = service.spreadsheets().values().append(spreadsheetId=spreadsheetId, range=rangeUpdate, valueInputOption='RAW', body=myBody).execute()
+   
+    #just read the second row..can be removed
+    rangeName = 'Sheet1!A2:B2'
+    result = service.spreadsheets().values().get(spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', [])
-
-
-
     if not values:
         print('No data found.')
     else:
         print('Name, Major:')
         for row in values:
-            # Print columns A and E, which correspond to indices 0 and 4.
             print('%s, %s' % (row[0], row[1]))
 
 
